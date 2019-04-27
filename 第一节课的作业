@@ -1,0 +1,7 @@
+1、resultType（属性）和resultMap（标签引用）的区别？
+答：resultType:官网描述（从这条语句中返回的期望类型的类的完全限定名或别名。主要如果返回的是集合，那应该设置为集合包含的类型，而不是集合本身。可以使用resultType或resultMap，但不能同时使用。）
+   resultMap:官网描述（外部resultMap的命名引用。结果集的映射是Mybatis最强大的特性，如果你对其理解透彻，很多复杂映射的情形都能迎刃而解。可以使用resultMap或resultType，但不能同时使用。）
+    
+2、collection和association的区别？
+
+3、Statement和PreparedStatement的区别？
