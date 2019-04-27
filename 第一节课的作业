@@ -1,7 +1,62 @@
 1、resultType（属性）和resultMap（标签引用）的区别？
 答：resultType:官网描述（从这条语句中返回的期望类型的类的完全限定名或别名。主要如果返回的是集合，那应该设置为集合包含的类型，而不是集合本身。可以使用resultType或resultMap，但不能同时使用。）
-   resultMap:官网描述（外部resultMap的命名引用。结果集的映射是Mybatis最强大的特性，如果你对其理解透彻，很多复杂映射的情形都能迎刃而解。可以使用resultMap或resultType，但不能同时使用。）
+    resultMap:官网描述（外部resultMap的命名引用。结果集的映射是Mybatis最强大的特性，如果你对其理解透彻，很多复杂映射的情形都能迎刃而解。可以使用resultMap或resultType，但不能同时使用。）
+    resultType除了在在返回集合映射到集合类型上较为简单，在映射到实体类型上要求字段一致。
+    resultMap可自定义配置返回对象信息。
+    综上所述：两者功能类似，resultMap更加灵活可自定义从而更加强大。且两者不能同时存在。
+    
+    
     
 2、collection和association的区别？
+答：他们都是resultMap里面的属性（association：一个复杂类型的关联；许多结果将包装成这种类型。嵌套结果映射 – 关联本身可以是一个 resultMap 元素，或者从别处引用一个）
+（collection：一个复杂类型的集合；嵌套结果映射 – 集合本身可以是一个 resultMap 元素，或者从别处引用一个）
+综上所述：association用于一对一表连接的处理方式，collection用于一对多表连接的处理方式。collection可包含association
+如下示例：
+<!-- 非常复杂的结果映射 -->
+<resultMap id="detailedBlogResultMap" type="Blog">
+  <constructor>
+    <idArg column="blog_id" javaType="int"/>
+  </constructor>
+  <result property="title" column="blog_title"/>
+  <association property="author" javaType="Author">
+    <id property="id" column="author_id"/>
+    <result property="username" column="author_username"/>
+    <result property="password" column="author_password"/>
+    <result property="email" column="author_email"/>
+    <result property="bio" column="author_bio"/>
+    <result property="favouriteSection" column="author_favourite_section"/>
+  </association>
+  <collection property="posts" ofType="Post">
+    <id property="id" column="post_id"/>
+    <result property="subject" column="post_subject"/>
+    <association property="author" javaType="Author"/>
+    <collection property="comments" ofType="Comment">
+      <id property="id" column="comment_id"/>
+    </collection>
+    <collection property="tags" ofType="Tag" >
+      <id property="id" column="tag_id"/>
+    </collection>
+    <discriminator javaType="int" column="draft">
+      <case value="1" resultType="DraftPost"/>
+    </discriminator>
+  </collection>
+</resultMap>
+
+
+
+
 
 3、Statement和PreparedStatement的区别？
+答：Statement 用于通用查询， PreparedStatement 用于执行参数化查询，CallableStatement则是用于存储过程。
+    功能上：
+    PreparedStatement是java.sql包下面的一个接口，用来执行SQL语句查询，通过调用connection.preparedStatement(sql)方法可以获得PreparedStatment对象。数据库系统会对sql语句进行预编译处理（如果JDBC驱动支持的话），预处理语句将被预先编译好，这条预编译的sql查询语句能在将来的查询中重用，这样一来，它比Statement对象生成的查询速度更快。
+    Statement 对象。在对数据库只执行一次性存取的时侯，用 Statement 对象进行处理。PreparedStatement 对象的开销比Statement大，对于一次性操作并不会带来额外的好处。
+    用法上：
+    PreparedStatement的sql语句无论是代码的可读性还是可维护性都较Statement较好。
+    安全上：
+    PreparedStatement相对Statement可避免sql注入的一些安全问题。
+    
+    
+    
+    
+    
